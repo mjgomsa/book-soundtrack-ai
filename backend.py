@@ -1,78 +1,47 @@
 import openai
+from psonic import *
 
-openai.api_key = 'Please see my email for API key.'
+openai.api_key = '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'
 
 
+def askGPT(prompt):
+    messages = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": f"{prompt}"}
+    ]
+    response = openai.ChatCompletion.create(
+        model="gpt-4", 
+        messages=messages
+    )
+    toreturn = response.choices[0].message['content'].strip()
+    print(toreturn)
+    return toreturn
 
 
-# Get Book Title from User
-# ========================
 
 def get_book_title():
     return input("What book are you reading? ")
 
-# Get Book Genre from Book Title
-# ==============================
 
 def get_book_genre(book_title):
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": f"Based on the book title '{book_title}', determine the genre that the book fits into."}
-    ]
-    response = openai.ChatCompletion.create(
-        model="gpt-4", 
-        messages=messages
-    )
-    book_genre = response.choices[0].message['content'].strip()
+    prompt = f"Based on the book title '{book_title}', determine the genre that the book fits into. Please omit all introductory text and use the following format: <comma_separated_list_of_book_genres>."
+    book_genre = askGPT(prompt)
     return book_genre
 
-# Map Book Genre to Music Genre using GPT-4
-# =========================================
 
 def map_to_music_genre(book_genre):
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": f"Based on the book's genre '{book_genre}', map to a music genre."}
-    ]
-    response = openai.ChatCompletion.create(
-        model="gpt-4", 
-        messages=messages
-    )
-    music_genre = response.choices[0].message['content'].strip()
+    prompt = f"Based on the each of the book's genres '{book_genre}', map to a music genre. Such that for the following, the relationship is <Fiction Genre> : <Music Genre>. For example: \n Absurdist : New Wave, Adventure: March/Military, Alternate History: Gregorian Chant, Americana: Ragtime, Chick Literature: Pop, Coming of Age: Folk, Crime: Rap/Hip Hop, Cyberpunk: Industrial, Dickensian: Standards, Epic Fantasy: Progressive Metal, Erotica: Latin/Tango, Fable: Rock, Gothic: Black Metal, Historical: Baroque, Humor: Polka, Inspirational: Spiritual/Religious, Mystery: Blues, Poetry: Jazz, Pulp: Lounge, War: Death Metal, Romance: Love pop, etc. Please omit all introductory text and omit the book's genre, only output music genres in the following format: <comma_separated_list_of_music_genres>"
+    music_genre = askGPT(prompt)
     return music_genre
 
-# Generate Sonic Pi Code using GPT-4
-# ==================================
 
 def generate_sonic_pi_code(music_genre):
-    messages = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": f"Based on the music genre '{music_genre}', create code for a song within that music genre for Sonic Pi."}
-    ]
-    response = openai.ChatCompletion.create(
-        model="gpt-4", 
-        messages=messages
-    )
-    sonic_pi_code = response.choices[0].message['content'].strip()
-    return sonic_pi_code
+    prompt =f"Based on the music genres '{music_genre}', create the code for a song within the intersection of these music genres in Sonic Pi. Please omit all introductory text or subsequent text! Again, only output the code to be played in Sonic Pi, no explanation, introduction or conclusion to the code."
+    music_code = askGPT(prompt)
+    return music_code
 
 
 
-# Play Music using Sonic Pi
-# =========================
-
-# def play_music(sonic_pi_code):
-
-
-#    # TODO: MJ pls help me with this
-
-
-#    print(f"Generated Sonic Pi Code: {sonic_pi_code}")
-
-
-
-# Main Function
-# =============
 
 def main():
     book_title = get_book_title()
@@ -80,9 +49,10 @@ def main():
     music_genre = map_to_music_genre(book_genre)
     sonic_pi_code = generate_sonic_pi_code(music_genre)
 
-    # This was just a test
-    print(f"Book Title: {book_title}")
-    print("=== SONIC PI CODE ===")
-    print(sonic_pi_code)
+    # print(f"Book Title: {book_title}")
+    # print(f"Book Genre: {book_genre}")
+    # print(f"Book Genre: {music_genre}")
+    # print("=== SONIC PI CODE ===")
+    # print(sonic_pi_code)
 
 main()
