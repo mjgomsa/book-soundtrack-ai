@@ -1,9 +1,6 @@
 import openai
 from psonic import *
 
-openai.api_key = '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'
-
-
 def askGPT(prompt):
     messages = [
         {"role": "system", "content": "You are a helpful assistant."},
